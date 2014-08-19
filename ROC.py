@@ -1,4 +1,5 @@
 from __future__ import division
+import os
 import matplotlib.pyplot as matplot
 import numpy as np
 import scipy.io as sci
@@ -13,9 +14,21 @@ from sklearn.metrics import roc_curve, auc
 random_state = np.random.RandomState(0)
 
 gen_dir = '/Users/dewal/Documents/lab/DC Data/Jurkat drug dosing/Jurkat TSA/TSA 3 day dosing 11_14/matlab data/'
-
 pos_dirloc = '111613_jurkats_tsa_3day_control_800_v1_C'
 neg_dirloc = '111613_jurkats_tsa_3day_2uM_800_v1_C'
+
+allFileNames = os.listdir(gen_dir)
+
+testDataLoc = []
+for iter in allFileNames:
+	if iter[0] != '.':
+		if iter != pos_dirloc and iter != neg_dirloc:
+			testDataLoc.extend([iter])
+
+
+for file in testDataLoc:
+	
+
 test_dir = '111413_jurkats_tsa_1day_1uM_800_v1_C'
 
 pos = sci.loadmat(gen_dir+pos_dirloc+'/'+pos_dirloc+'_Plotting_Dataset.mat')
@@ -39,7 +52,7 @@ y = np.array(true_labels);
 s = np.array([X,y[0]])
 
 
-
+'''
 X, y = shuffle(X.T, y[0], random_state=random_state)
 
 # shuffle and split training and test sets
@@ -98,4 +111,4 @@ pl.plot(b.T[0], b.T[1], 'bo')
 print '% green: ' + str(len(a)/(len(b)+len(a))*100)
 print '% blue: ' + str(len(b)/(len(b)+len(a))*100)
 
-pl.show()
+pl.show()'''
