@@ -99,3 +99,5 @@ print '% green: ' + str(len(a)/(len(b)+len(a))*100)
 print '% blue: ' + str(len(b)/(len(b)+len(a))*100)
 
 pl.show()
+
+'''testttt'''
