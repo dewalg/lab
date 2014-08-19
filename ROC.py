@@ -19,15 +19,32 @@ neg_dirloc = '111613_jurkats_tsa_3day_2uM_800_v1_C'
 
 allFileNames = os.listdir(gen_dir)
 
+#find all files to be tested
 testDataLoc = []
 for iter in allFileNames:
 	if iter[0] != '.':
 		if iter != pos_dirloc and iter != neg_dirloc:
 			testDataLoc.extend([iter])
 
-
+#load all of those files
+testData = [None]*len(testDataLoc)
+dataName = [None]*len(testDataLoc)
+counter = 0
 for file in testDataLoc:
+	x = sci.loadmat(gen_dir+file+'/'+file+'_Plotting_Dataset.mat')
+	testData[counter] = x['Data_set'].T
+	dataName[counter] = file
+	counter += 1
 	
+testData = np.array(testData)
+
+#truncate the data
+tData = [None]*len(testData)
+for i in range(0,len(testData)):
+	tData[i] = [testData[i][3]*0.22, testData[i][4]]
+
+tData = np.array(tData)
+
 
 test_dir = '111413_jurkats_tsa_1day_1uM_800_v1_C'
 
@@ -52,7 +69,7 @@ y = np.array(true_labels);
 s = np.array([X,y[0]])
 
 
-'''
+
 X, y = shuffle(X.T, y[0], random_state=random_state)
 
 # shuffle and split training and test sets
@@ -67,8 +84,6 @@ y_train, y_test = y[0:half], y[half:-1]
 classifier = svm.SVC(kernel='rbf', probability=True)
 model = classifier.fit(X_train, y_train)
 probas_ = model.predict_proba(X_test)
-
-tlabels = model.predict(test.T)
 
 # Compute ROC curve and area the curve
 fpr, tpr, thresholds = roc_curve(y_test, probas_[:, 1])
@@ -88,27 +103,40 @@ pl.title('Receiver operating characteristic example')
 pl.legend(loc="lower right")
 
 
-
-a = np.array([[0,0]])
-b = np.array([[0,0]])
-pl.figure()
-iter = 0
-for label in tlabels:
-	label = int(label)
+'''TESTING THE MODEL'''
+counter = 0;
+for test in tData:
+	test = np.array([test[0], test[1]])
+	tlabels = model.predict(test.T)
 	
-	if label == 1: 
-		a = np.r_[a, [test.T[iter]]]
-	elif label == 0:
-		b = np.r_[b, [test.T[iter]]]
+	a = np.array([[0,0]])
+	b = np.array([[0,0]])
+	pl.figure()
+	iter = 0
+	for label in tlabels:
+		label = int(label)
+		
+		if label == 1: 
+			a = np.r_[a, [test.T[iter]]]
+		elif label == 0:
+			b = np.r_[b, [test.T[iter]]]
+		
+		iter += 1
+
+
+	pgreen = len(a)/(len(b)+len(a))*100
+	pblue = len(b)/(len(b)+len(a))*100
+	pl.plot(a.T[0], a.T[1], 'go', label= pgreen)
+	pl.plot(b.T[0], b.T[1], 'bo', label= pblue)
 	
-	iter += 1
-
-
-pl.plot(a.T[0], a.T[1], 'go')
-pl.plot(b.T[0], b.T[1], 'bo')
-
+	pl.xlabel('size')
+	pl.ylabel('deform')
+	pl.title(dataName[counter])
+	pl.legend(loc="lower right")
 	
-print '% green: ' + str(len(a)/(len(b)+len(a))*100)
-print '% blue: ' + str(len(b)/(len(b)+len(a))*100)
+	print dataName[counter]
+	print '% green: ' + str(pgreen) + ' AND % blue: ' + str(pblue)
+	print '\n'
+	counter += 1
 
-pl.show()'''
+pl.show()
