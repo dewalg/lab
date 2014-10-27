@@ -198,7 +198,11 @@ class cine(object):
 					
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
 		#self._dispImages(image_array, nframes)
+=======
+		self._dispImages(image_array, nframes)
+>>>>>>> FETCH_HEAD
 =======
 		self._dispImages(image_array, nframes)
 >>>>>>> FETCH_HEAD
