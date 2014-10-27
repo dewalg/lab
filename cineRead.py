@@ -5,6 +5,7 @@ import tables
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.animation as animation
+import pylab as pl
 '''
 Program based on the work of Adam Light who wrote original pycine.py
 '''
@@ -171,10 +172,12 @@ class cine(object):
 		cineFile.seek(start_pos)
 		
 		pointer_array = struct.unpack("<"+str(nframes)+"Q", cineFile.read(nframes*8))
-		image_array = numpy.ndarray((ny,nx,nframes),float)
+		
 		
 		#go to first frame
 		cineFile.seek(pointer_array[0])
+		
+		image_array = numpy.ndarray((nframes,ny,nx),float)
 		
 		for frame in range(nframes):
 			
@@ -191,29 +194,30 @@ class cine(object):
 			else:
 				image_bits = struct.unpack("<"+str(ImageSize/2)+"H", cineFile.read(ImageSize))	
 			
-			image_array[..., frame] = numpy.reshape(image_bits,(ny, nx))
-			
-		print "Read " + str(nframes) + " frames."
+			image_array[frame, ...] = numpy.reshape(image_bits,(ny, nx))
+					
 		
-		'''
-		plt.imshow(image_array[...,50], cmap=cm.Greys_r)
-		plt.show()
-		'''
-		
+<<<<<<< HEAD
 		#self._dispImages(image_array, nframes)
+=======
+		self._dispImages(image_array, nframes)
+>>>>>>> FETCH_HEAD
 		return image_array
 	
-	'''
-	def _dispImages(self,imageArr, nframes):
-		fig = plt.figure()
-		new_imArr = numpy.ndarray(imageArr[:,:,1].shape)
+	def _dispImages(self,imageArr, nframes): #displays the "video" of the .cine file
+		fig = plt.figure() #create new figure
 		
-		for n in range(nframes):
-			new_imArr = imageArr[...,n]
+		print "FYI: press control+\ to exit program in middle of video (on mac)"
 		
 		img = None
-		for frame in new_imArr:
-			'''	
+		for frame in range(nframes): 
+			im = imageArr[frame]
+			if img is None:
+				img = pl.imshow(im, cmap=cm.Greys_r)
+			else:
+				img.set_data(im)
+			pl.pause(0.1)
+			pl.draw()
 							
 def main(filename):
 
