@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.animation as animation
 import pylab as pl
+from datetime import datetime
+
 '''
 Program based on the work of Adam Light who wrote original pycine.py
 '''
@@ -115,7 +117,7 @@ class cine(object):
 		    + "???? 3I l I 3l 3I 4I 8f l 2f I" 
 		# the next chunk is skipped stuff
 		format_Conv8min_MCPercent_inclusive = "2I 30l 3I 4? 2I 16l 32I l 64f" 
-		format_CICalib_Description_end_inclusive = "7I 8I 4I 4I 4096s"
+		format_CICalib_Description_end_inclusive = "7I 8I 4I 4I 4096s" #4096s
 		format_string = ("<" + format_ImWidth_RealBPP_inclusive 
 				 + format_Conv8min_MCPercent_inclusive 
 				 + format_CICalib_Description_end_inclusive)
@@ -195,17 +197,10 @@ class cine(object):
 				image_bits = struct.unpack("<"+str(ImageSize/2)+"H", cineFile.read(ImageSize))	
 			
 			image_array[frame, ...] = numpy.reshape(image_bits,(ny, nx))
-					
-		
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 		#self._dispImages(image_array, nframes)
-=======
-		self._dispImages(image_array, nframes)
->>>>>>> FETCH_HEAD
-=======
-		self._dispImages(image_array, nframes)
->>>>>>> FETCH_HEAD
+		print nframes
+
 		return image_array
 	
 	def _dispImages(self,imageArr, nframes): #displays the "video" of the .cine file
@@ -228,6 +223,8 @@ def main(filename):
 	if filename.endswith('.cine'):
 		# Read into Cine object
 		mov = cine(filename)
+		
+		print(datetime.now()-startTime)
 
 		return 1
 	else:
@@ -237,6 +234,9 @@ def main(filename):
 
 
 if __name__ == "__main__":
+
+	startTime = datetime.now()
+
 	try:
 		filename = sys.argv[1]
 		main(filename)

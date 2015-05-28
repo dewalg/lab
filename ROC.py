@@ -22,8 +22,8 @@ allFileNames = os.listdir(gen_dir)
 #find all files to be tested
 testDataLoc = []
 for iter in allFileNames:
-	if iter[0] != '.':
-		if iter != pos_dirloc and iter != neg_dirloc:
+	if iter[0] != '.':    								#make sure its not a hidden directory
+		if iter != pos_dirloc and iter != neg_dirloc:	#any other directory other than pre-set controls
 			testDataLoc.extend([iter])
 
 #load all of those files
@@ -32,11 +32,10 @@ dataName = [None]*len(testDataLoc)
 counter = 0
 for file in testDataLoc:
 	x = sci.loadmat(gen_dir+file+'/'+file+'_Plotting_Dataset.mat')
-	testData[counter] = x['Data_set'].T
-	dataName[counter] = file
+	testData[counter] = np.array(x['Data_set'])
+	dataName[counter] = str(file)
 	counter += 1
 	
-testData = np.array(testData)
 
 #truncate the data
 tData = [None]*len(testData)
@@ -57,9 +56,13 @@ neg = neg['Data_set'].T
 test = test['Data_set'].T
 
 
-pos = np.array([pos[3]*0.22, pos[4]])
-neg = np.array([neg[3]*0.22, neg[4]])
-test = np.array([test[3]*0.22, test[4]])
+# pos = np.array([pos[3]*0.22, pos[4]])
+# neg = np.array([neg[3]*0.22, neg[4]])
+# test = np.array([test[3]*0.22, test[4]])
+pos = np.array(pos)
+neg = np.array(neg)
+test = np.array(test)
+
 
 true_labels = np.c_[np.zeros((1, len(pos.T))), np.ones((1, len(neg.T)))]
 
@@ -81,14 +84,14 @@ y_train, y_test = y[0:half], y[half:-1]
 
 
 # Run classifier
-classifier = svm.SVC(kernel='rbf', probability=True)
+classifier = svm.SVC(kernel='linear', probability=True)
 model = classifier.fit(X_train, y_train)
 probas_ = model.predict_proba(X_test)
 
 # Compute ROC curve and area the curve
 fpr, tpr, thresholds = roc_curve(y_test, probas_[:, 1])
 roc_auc = auc(fpr, tpr)
-print "Area under the ROC curve : %f" % roc_auc
+print ("Area under the ROC curve : ", roc_auc)
 
 
 # Plot ROC curve
@@ -104,39 +107,39 @@ pl.legend(loc="lower right")
 
 
 '''TESTING THE MODEL'''
-counter = 0;
-for test in tData:
-	test = np.array([test[0], test[1]])
-	tlabels = model.predict(test.T)
+# counter = 0;
+# for test in tData:
+# 	test = np.array([test[0], test[1]])
+# 	tlabels = model.predict(test.T)
 	
-	a = np.array([[0,0]])
-	b = np.array([[0,0]])
-	pl.figure()
-	iter = 0
-	for label in tlabels:
-		label = int(label)
+# 	a = np.array([[0,0]])
+# 	b = np.array([[0,0]])
+# 	pl.figure()
+# 	iter = 0
+# 	for label in tlabels:
+# 		label = int(label)
 		
-		if label == 1: 
-			a = np.r_[a, [test.T[iter]]]
-		elif label == 0:
-			b = np.r_[b, [test.T[iter]]]
+# 		if label == 1: 
+# 			a = np.r_[a, [test.T[iter]]]
+# 		elif label == 0:
+# 			b = np.r_[b, [test.T[iter]]]
 		
-		iter += 1
+# 		iter += 1
 
 
-	pgreen = len(a)/(len(b)+len(a))*100
-	pblue = len(b)/(len(b)+len(a))*100
-	pl.plot(a.T[0], a.T[1], 'go', label= pgreen)
-	pl.plot(b.T[0], b.T[1], 'bo', label= pblue)
+# 	pgreen = len(a)/(len(b)+len(a))*100
+# 	pblue = len(b)/(len(b)+len(a))*100
+# 	pl.plot(a.T[0], a.T[1], 'go', label= pgreen)
+# 	pl.plot(b.T[0], b.T[1], 'bo', label= pblue)
 	
-	pl.xlabel('size')
-	pl.ylabel('deform')
-	pl.title(dataName[counter])
-	pl.legend(loc="lower right")
+# 	pl.xlabel('size')
+# 	pl.ylabel('deform')
+# 	pl.title(dataName[counter])
+# 	pl.legend(loc="lower right")
 	
-	print dataName[counter]
-	print '% green: ' + str(pgreen) + ' AND % blue: ' + str(pblue)
-	print '\n'
-	counter += 1
+# 	print (dataName[counter])
+# 	print ('% green: ', str(pgreen), ' AND % blue: ', str(pblue))
+# 	print ('\n')
+# 	counter += 1
 
 pl.show()
